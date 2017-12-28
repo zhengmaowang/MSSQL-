@@ -1,0 +1,26 @@
+Recently I worked with a customer, he found the following warning message when run Microsoft Risk and Health Assessment Program:
+
+Indexes have been identified that are larger than the recommended size (900 bytes) 
+
+First I would like to give you what is index and what does it include. I copy the index definition from MSDN link 
+
+An index is an on-disk structure associated with a table or view that speeds retrieval of rows from the table or view. An index contains keys built from one or more columns in the table or view. These keys are stored in a structure (B-tree) that enables SQL Server to find the row or rows associated with the key values quickly and efficiently. 
+
+And Microsoft has a limitation on the total size of all index key columns. The maximum size is 900 bytes.
+
+If an index's total size of all index key columns exceed 900 bytes, it will show the message above.
+
+The solution is to use include column, it has the following benefits:
+
+•They can be data types not allowed as index key columns.
+•They are not considered by the Database Engine when calculating the number of index key columns or index key size.
+
+USE AdventureWorks2012;  
+GO  
+-- Creates a nonclustered index on the Person.Address table with four included (nonkey) columns.   
+-- index key column is PostalCode and the nonkey columns are  
+-- AddressLine1, AddressLine2, City, and StateProvinceID.  
+CREATE NONCLUSTERED INDEX IX_Address_PostalCode  
+ON Person.Address (PostalCode)  
+INCLUDE (AddressLine1, AddressLine2, City, StateProvinceID);  
+GO  
